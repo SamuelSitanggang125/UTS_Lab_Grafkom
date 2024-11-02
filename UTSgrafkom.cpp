@@ -7,62 +7,40 @@ const float backgroundWidth = 1600.0f;  // Lebar latar belakang
 const float characterWidth = 20.0f;     // Lebar kotak (karakter)
 
 void drawBackground() {
-    // Gambar latar belakang dengan pola sederhana
-    for (float x = 0.0f; x < backgroundWidth; x += 100.0f) {
-        if (static_cast<int>(x / 100) % 2 == 0) {
-            glColor3f(0.5f, 0.8f, 1.0f);  // Warna biru langit
-        }
-        else {
-            glColor3f(0.6f, 0.9f, 1.0f);  // Warna biru langit muda
-        }
-        glBegin(GL_QUADS);
-        glVertex2f(x, -200.0f);
-        glVertex2f(x + 100.0f, -200.0f);
-        glVertex2f(x + 100.0f, 200.0f);
-        glVertex2f(x, 200.0f);
-        glEnd();
-    }
-
-    // Gambar pohon
-    glColor3f(0.4f, 0.2f, 0.1f);  // Warna batang pohon
+    // Gambar langit
+    glColor3f(0.5f, 0.8f, 1.0f);  // Warna biru muda untuk langit
     glBegin(GL_QUADS);
-    glVertex2f(300.0f, -100.0f);
-    glVertex2f(320.0f, -100.0f);
-    glVertex2f(320.0f, 0.0f);
-    glVertex2f(300.0f, 0.0f);
+    glVertex2f(-backgroundWidth, 200.0f);   // Atas kiri
+    glVertex2f(backgroundWidth, 200.0f);   // Atas kanan
+    glVertex2f(backgroundWidth, -150.0f);  // Bawah kanan (di atas rumput)
+    glVertex2f(-backgroundWidth, -150.0f);  // Bawah kiri
     glEnd();
 
-    glColor3f(0.0f, 0.8f, 0.0f);  // Warna daun pohon
-    glBegin(GL_TRIANGLES);
-    glVertex2f(280.0f, 0.0f);
-    glVertex2f(340.0f, 0.0f);
-    glVertex2f(310.0f, 60.0f);
+    // Gambar rumput
+    glColor3f(0.0f, 0.5f, 0.0f);  // Warna hijau untuk rumput
+    glBegin(GL_QUADS);
+    glVertex2f(-backgroundWidth, -200.0f);  // Bawah kiri
+    glVertex2f(backgroundWidth, -200.0f);   // Bawah kanan
+    glVertex2f(backgroundWidth, -150.0f);   // Atas kanan
+    glVertex2f(-backgroundWidth, -150.0f);  // Atas kiri
     glEnd();
 
-    glBegin(GL_TRIANGLES);
-    glVertex2f(290.0f, 30.0f);
-    glVertex2f(330.0f, 30.0f);
-    glVertex2f(310.0f, 80.0f);
-    glEnd();
-
-    // Gambar awan
+    // Gambar awan dengan jarak antar awan 300
     glColor3f(1.0f, 1.0f, 1.0f);  // Warna putih untuk awan
-    glBegin(GL_TRIANGLE_FAN);
-    glVertex2f(600.0f, 150.0f);
-    glVertex2f(580.0f, 150.0f);
-    glVertex2f(590.0f, 170.0f);
-    glVertex2f(610.0f, 170.0f);
-    glVertex2f(620.0f, 150.0f);
-    glEnd();
-
-    glBegin(GL_TRIANGLE_FAN);
-    glVertex2f(650.0f, 160.0f);
-    glVertex2f(630.0f, 160.0f);
-    glVertex2f(640.0f, 180.0f);
-    glVertex2f(660.0f, 180.0f);
-    glVertex2f(670.0f, 160.0f);
-    glEnd();
+    for (float x = -backgroundWidth; x <= backgroundWidth; x += 250.0f) {
+        for (float offset = 0.0f; offset <= 70.0f; offset += 30.0f) {
+            glBegin(GL_TRIANGLE_FAN);
+            glVertex2f(x + offset, 150.0f);      // Titik pusat
+            glVertex2f(x + offset - 20.0f, 150.0f);
+            glVertex2f(x + offset - 10.0f, 170.0f);
+            glVertex2f(x + offset + 10.0f, 170.0f);
+            glVertex2f(x + offset + 20.0f, 150.0f);
+            glEnd();
+        }
+    }
 }
+
+
 
 void display() {
     glClear(GL_COLOR_BUFFER_BIT);
