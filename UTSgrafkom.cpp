@@ -1,4 +1,5 @@
 #include <GL/freeglut.h>
+#include <math.h>  // Menambahkan header untuk fungsi cosf dan sinf
 
 float characterX = 0.0f;   // Posisi X karakter
 float cameraX = 0.0f;      // Posisi X kamera
@@ -7,22 +8,63 @@ const float backgroundWidth = 1600.0f;  // Lebar latar belakang
 const float characterWidth = 10.0f;     // Lebar kotak (karakter)
 
 void drawBackground() {
-    // Gambar latar belakang dengan pola sederhana
-    for (float x = 0.0f; x < backgroundWidth; x += 100.0f) {
-        if (static_cast<int>(x / 100) % 2 == 0) {
-            glColor3f(0.5f, 0.8f, 1.0f);  // Warna biru langit
+    // Gambar langit
+    glColor3f(0.5f, 0.8f, 1.0f);  // Warna biru muda untuk langit
+    glBegin(GL_QUADS);
+    glVertex2f(-backgroundWidth, 200.0f);   // Atas kiri
+    glVertex2f(backgroundWidth, 200.0f);   // Atas kanan
+    glVertex2f(backgroundWidth, -150.0f);  // Bawah kanan (di atas rumput)
+    glVertex2f(-backgroundWidth, -150.0f);  // Bawah kiri
+    glEnd();
+
+    // Gambar rumput
+    glColor3f(0.0f, 0.5f, 0.0f);  // Warna hijau untuk rumput
+    glBegin(GL_QUADS);
+    glVertex2f(-backgroundWidth, -200.0f);  // Bawah kiri
+    glVertex2f(backgroundWidth, -200.0f);   // Bawah kanan
+    glVertex2f(backgroundWidth, -150.0f);   // Atas kanan
+    glVertex2f(-backgroundWidth, -150.0f);  // Atas kiri
+    glEnd();
+
+    // Gambar awan dengan jarak antar awan 300
+    glColor3f(1.0f, 1.0f, 1.0f);  // Warna putih untuk awan
+    for (float x = -backgroundWidth; x <= backgroundWidth; x += 250.0f) {
+        for (float offset = 0.0f; offset <= 70.0f; offset += 30.0f) {
+            glBegin(GL_TRIANGLE_FAN);
+            glVertex2f(x + offset, 150.0f);      // Titik pusat
+            glVertex2f(x + offset - 20.0f, 150.0f);
+            glVertex2f(x + offset - 10.0f, 170.0f);
+            glVertex2f(x + offset + 10.0f, 170.0f);
+            glVertex2f(x + offset + 20.0f, 150.0f);
+            glEnd();
         }
-        else {
-            glColor3f(0.6f, 0.9f, 1.0f);  // Warna biru langit muda
-        }
+    }
+
+    // Gambar pohon
+    for (float x = -backgroundWidth + 100.0f; x <= backgroundWidth; x += 300.0f) {
+        // Batang pohon
+        glColor3f(0.5f, 0.35f, 0.05f);  // Warna coklat untuk batang
         glBegin(GL_QUADS);
-        glVertex2f(x, -200.0f);
-        glVertex2f(x + 100.0f, -200.0f);
-        glVertex2f(x + 100.0f, 200.0f);
-        glVertex2f(x, 200.0f);
+        glVertex2f(x - 10.0f, -150.0f);    // Bawah kiri
+        glVertex2f(x + 10.0f, -150.0f);    // Bawah kanan
+        glVertex2f(x + 10.0f, -100.0f);    // Atas kanan
+        glVertex2f(x - 10.0f, -100.0f);    // Atas kiri
+        glEnd();
+
+        // Daun pohon (bentuk lingkaran sederhana)
+        glColor3f(0.0f, 0.7f, 0.0f);  // Warna hijau untuk daun
+        glBegin(GL_TRIANGLE_FAN);
+        glVertex2f(x, -80.0f);    // Pusat lingkaran
+        for (int i = 0; i <= 20; i++) {
+            float angle = i * 2.0f * 3.14159f / 20;  // Menghitung sudut per titik
+            float dx = 30.0f * cosf(angle);  // Posisi X titik lingkaran
+            float dy = 30.0f * sinf(angle);  // Posisi Y titik lingkaran
+            glVertex2f(x + dx, -80.0f + dy);  // Menambahkan posisi titik
+        }
         glEnd();
     }
 }
+
 
 void drawCharacter() {
     // Gambar badan (Merah)
@@ -196,7 +238,7 @@ void drawCharacter() {
     glVertex2f(23.0f, 30.0f);
     glVertex2f(23.0f, 25.0f);
     glVertex2f(22.0f, 25.0f);
-    glEnd();
+    glEnd();  
 }
 
 void display() {
