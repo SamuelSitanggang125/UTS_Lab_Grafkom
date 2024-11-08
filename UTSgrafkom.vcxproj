@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Kuliah\Semester 5\Lab\lab Grafika Komputer\UTSgrafkom\UTSgrafkom\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Kuliah\Semester 5\Lab\lab Grafika Komputer\UTSgrafkom\UTSgrafkom\library;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Kuliah\Semester 5\Grafika Komputer\Code\MVSCODE\UTS_Lab_Grafkom\UTSgrafkom\include;C:\Kuliah\Semester 5\Lab\lab Grafika Komputer\UTSgrafkom\UTSgrafkom\include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Kuliah\Semester 5\Grafika Komputer\Code\MVSCODE\UTS_Lab_Grafkom\library;C:\Kuliah\Semester 5\Lab\lab Grafika Komputer\UTSgrafkom\UTSgrafkom\library;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -108,6 +108,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\Kuliah\Semester 5\Grafika Komputer\Code\MVSCODE\UTS_Lab_Grafkom\include\GL;D:\Kuliah\Semester 5\Grafika Komputer\Code\MVSCODE\UTS_Lab_Grafkom\UTSgrafkom\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
