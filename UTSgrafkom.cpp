@@ -51,6 +51,7 @@ void updateLegMovement(bool isWalking, bool facingRight) {
         leftLegAngle = 0.0f;
         rightLegAngle = 0.0f;
         leftArmAngle = 0.0f;
+
     }
 }
 
