@@ -3,6 +3,10 @@
 #include <stdbool.h>
 
 
+
+float jumpVelocity = 0.0f;          // Kecepatan lompatan
+bool isJumping = false;             // Apakah karakter sedang melompat
+float gravity = -0.5f;              // Gaya gravitasi yang menurunkan karakter saat melompat
 float characterX = 0.0f;           // Posisi X karakter
 float characterBaseY = -125.0f;     // Posisi dasar Y karakter (letak kaki karakter)
 float cameraX = 0.0f;               // Posisi X kamera
@@ -20,6 +24,24 @@ float rightLegAngle = 0.0f;
 float angle = 0.0f; // Variabel ini akan digunakan untuk mengubah sudut rotasi kaki
 bool isWalking = false; // Menentukan apakah karakter sedang berjalan'
 float leftArmAngle = 0.0f;
+
+
+
+
+
+void updateJump() {
+    if (isJumping) {
+        characterBaseY += jumpVelocity;  // Update posisi Y berdasarkan kecepatan lompatan
+        jumpVelocity += gravity;         // Tambahkan gravitasi ke kecepatan lompatan
+
+
+        if (characterBaseY <= -125.0f) {
+            characterBaseY = -125.0f;   // Kembalikan ke posisi dasar
+            isJumping = false;          // Lompatan selesai
+            jumpVelocity = 0.0f;        // Reset kecepatan lompatan
+        }
+    }
+}
 
 
 
@@ -51,7 +73,6 @@ void updateLegMovement(bool isWalking, bool facingRight) {
         leftLegAngle = 0.0f;
         rightLegAngle = 0.0f;
         leftArmAngle = 0.0f;
-
     }
 }
 
@@ -485,11 +506,16 @@ void display() {
     glutSwapBuffers();
 }
 
+
+
+
+
 void update(int value) {
     if (characterX > screenWidth / 2 && characterX < backgroundWidth - screenWidth / 2) {
         cameraX = characterX - screenWidth / 2;
     }
 
+    updateJump();
     // Perbarui sudut rotasi kaki menggunakan fungsi sinus dan cosinus
     leftLegAngle = sin(angle) * 15.0f;
     rightLegAngle = cos(angle) * 15.0f;
@@ -520,6 +546,12 @@ void keyboard(unsigned char key, int x, int y) {
         facingRight = true; // Tampilkan karakter menghadap ke depan (sesuaikan jika perlu)
         isWalking = false; // Bisa menonaktifkan animasi berjalan jika tidak diperlukan
         break;
+    case 'w':
+        if (!isJumping) {
+            jumpVelocity = 10.0f; // Set kecepatan lompatan awal
+            isJumping = true;     // Mulai lompatan
+        }
+        break;
     default:
         break;
     }
@@ -539,6 +571,7 @@ void keyboardUp(unsigned char key, int x, int y) {
     glutPostRedisplay();
 }
 
+
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
@@ -551,7 +584,7 @@ int main(int argc, char** argv) {
 
     glutDisplayFunc(display);
     glutKeyboardFunc(keyboard);
-    glutKeyboardUpFunc(keyboardUp); // Menambahkan fungsi ini
+    glutKeyboardUpFunc(keyboardUp);
     glutTimerFunc(16, update, 0);
 
     glutMainLoop();
