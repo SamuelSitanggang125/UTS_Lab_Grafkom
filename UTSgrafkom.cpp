@@ -2,13 +2,11 @@
 #include <math.h> 
 #include <stdbool.h>
 
-
-
 float jumpVelocity = 0.0f;          // Kecepatan lompatan
-bool isJumping = false;             // Apakah karakter sedang melompat
-float gravity = -0.5f;              // Gaya gravitasi yang menurunkan karakter saat melompat
+bool isJumping = false;             // karakter lagi lompat atau tidak
+float gravity = -0.5f;              // gaya gravitasi ketika lompat
 float characterX = 0.0f;           // Posisi X karakter
-float characterBaseY = -125.0f;     // Posisi dasar Y karakter (letak kaki karakter)
+float characterBaseY = -125.0f;     // Posisi y karakter (kaki)
 float cameraX = 0.0f;               // Posisi X kamera
 const float screenWidth = 800.0f;   // Lebar layar
 const float backgroundWidth = 1600.0f;  // Lebar latar belakang
@@ -19,15 +17,16 @@ float cloudTopY = 240.0f;           // Puncak awan
 bool facingSide = false;            // Apakah karakter sedang menghadap samping
 bool facingRight = true;            // Apakah karakter menghadap kanan (jika menghadap samping)
 
-float leftLegAngle = 0.0f;
+//var untuk angle rotasi kaki kiri, kanan ,dan tangan 
+//var untuk kondisi karakter bergerak ke kiri atau kanan
+// dan juga kondisi karakter sedang berjalan atau tidak 
+float leftLegAngle = 0.0f;          
 float rightLegAngle = 0.0f;
-float angle = 0.0f; // Variabel ini akan digunakan untuk mengubah sudut rotasi kaki
-bool isWalking = false; // Menentukan apakah karakter sedang berjalan'
+float angle = 0.0f; 
+bool isWalking = false; 
 float leftArmAngle = 0.0f;
-
-
-
-
+bool isMovingLeft = false;
+bool isMovingRight = false;
 
 void updateJump() {
     if (isJumping) {
@@ -43,33 +42,28 @@ void updateJump() {
     }
 }
 
-
-
 void updateLegMovement(bool isWalking, bool facingRight) {
-    float speedFactor = 10.0f;  // Adjust this value to control the speed of the leg and arm movement
-    float maxAngle = 15.0f;  // Maximum angle for leg and arm movement (reduce if too large)
+    float speedFactor = 10.0f; 
+    float maxAngle = 15.0f;  
 
     if (isWalking) {
-        // Update the angle of the legs and arms for walking animation
-        float timeFactor = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f; // Convert time to seconds
+       
+        float timeFactor = (float)glutGet(GLUT_ELAPSED_TIME) / 1000.0f; 
 
         if (facingRight) {
-            leftLegAngle = sin(timeFactor * speedFactor) * maxAngle;  // Left leg moves
-            rightLegAngle = -leftLegAngle; // Right leg moves in the opposite direction
+            leftLegAngle = sin(timeFactor * speedFactor) * maxAngle; 
+            rightLegAngle = -leftLegAngle; 
 
-            // Left arm moves in sync with left leg
             leftArmAngle = sin(timeFactor * speedFactor) * maxAngle;
         }
         else {
-            rightLegAngle = sin(timeFactor * speedFactor) * maxAngle;  // Right leg moves
-            leftLegAngle = -rightLegAngle; // Left leg moves in the opposite direction
+            rightLegAngle = sin(timeFactor * speedFactor) * maxAngle;  
+            leftLegAngle = -rightLegAngle; 
 
-            // Left arm moves in sync with left leg (mirror the arm movement if facing left)
             leftArmAngle = -sin(timeFactor * speedFactor) * maxAngle;
         }
     }
     else {
-        // If not walking, set legs and arm to a resting position
         leftLegAngle = 0.0f;
         rightLegAngle = 0.0f;
         leftArmAngle = 0.0f;
@@ -111,22 +105,22 @@ void drawBackground() {
 
     for (float x = -backgroundWidth + 100.0f; x <= backgroundWidth; x += 300.0f) {
         // Batang pohon
-        glColor3f(0.5f, 0.35f, 0.05f);  // Warna coklat untuk batang
+        glColor3f(0.5f, 0.35f, 0.05f);  
         glBegin(GL_QUADS);
-        glVertex2f(x - 10.0f, -150.0f);    // Bawah kiri
-        glVertex2f(x + 10.0f, -150.0f);    // Bawah kanan
-        glVertex2f(x + 10.0f, -100.0f);    // Atas kanan
-        glVertex2f(x - 10.0f, -100.0f);    // Atas kiri
+        glVertex2f(x - 10.0f, -150.0f);    
+        glVertex2f(x + 10.0f, -150.0f);    
+        glVertex2f(x + 10.0f, -100.0f);    
+        glVertex2f(x - 10.0f, -100.0f);    
         glEnd();
         // Daun pohon (bentuk lingkaran sederhana)
-        glColor3f(0.0f, 0.7f, 0.0f);  // Warna hijau untuk daun
+        glColor3f(0.0f, 0.7f, 0.0f);  
         glBegin(GL_TRIANGLE_FAN);
-        glVertex2f(x, -80.0f);    // Pusat lingkaran
+        glVertex2f(x, -80.0f);    
         for (int i = 0; i <= 20; i++) {
-            float angle = i * 2.0f * 3.14159f / 20;  // Menghitung sudut per titik
-            float dx = 30.0f * cosf(angle);  // Posisi X titik lingkaran
-            float dy = 30.0f * sinf(angle);  // Posisi Y titik lingkaran
-            glVertex2f(x + dx, -80.0f + dy);  // Menambahkan posisi titik
+            float angle = i * 2.0f * 3.14159f / 20;  
+            float dx = 30.0f * cosf(angle);  
+            float dy = 30.0f * sinf(angle);  
+            glVertex2f(x + dx, -80.0f + dy);  
         }
         glEnd();
     }
@@ -135,7 +129,6 @@ void drawBackground() {
 }
 
 void drawCharacterFront() {
-    // Menggambar karakter tampak depan
     glColor3f(1.0f, 0.0f, 0.0f);  // Badan
     glBegin(GL_QUADS);
     glVertex2f(4.0f, 0.0f);
@@ -317,13 +310,11 @@ void drawCharacterSide(bool facingRight) {
     glPushMatrix();
     updateLegMovement(isWalking, facingRight);
 
-    // Jika karakter menghadap kiri, kita membalikkan gambar di sumbu X
     if (!facingRight) {
         glScalef(-1.0f, 1.0f, 1.0f);
         glTranslatef(-20.0f, 0.0f, 0.0f);
     }
 
-    // Menggambar badan karakter (tampak samping)
     glColor3f(1.0f, 0.0f, 0.0f);  // Badan
     glBegin(GL_QUADS);
     glVertex2f(4.0f, 0.0f);
@@ -343,10 +334,10 @@ void drawCharacterSide(bool facingRight) {
 
     // Kaki kiri
     glPushMatrix();
-    glTranslatef(10.0f, -7.0f, 0.0f); // Pindah titik rotasi ke posisi pangkal kaki
-    glRotatef(leftLegAngle, 0.0f, 0.0f, 1.0f); // Rotasi berdasarkan sudut kaki kiri
-    glTranslatef(-10.0f, 7.0f, 0.0f); // Kembalikan posisi setelah rotasi
-    glColor3f(0.0f, 0.5f, 1.0f); // Warna kaki kiri
+    glTranslatef(10.0f, -7.0f, 0.0f); 
+    glRotatef(leftLegAngle, 0.0f, 0.0f, 1.0f); 
+    glTranslatef(-10.0f, 7.0f, 0.0f); 
+    glColor3f(0.0f, 0.5f, 1.0f); 
     glBegin(GL_QUADS);
     glVertex2f(8.0f, -20.0f);
     glVertex2f(12.0f, -20.0f);
@@ -355,8 +346,8 @@ void drawCharacterSide(bool facingRight) {
     glEnd();
 
     // Sepatu kiri
-    glTranslatef(0.0f, -5.0f, 0.0f); // Posisi sepatu kiri sedikit lebih rendah dari kaki
-    glColor3f(0.0f, 0.0f, 0.0f); // Warna hitam (sepatu kiri)
+    glTranslatef(0.0f, -5.0f, 0.0f); 
+    glColor3f(0.0f, 0.0f, 0.0f); 
     glBegin(GL_QUADS);
     glVertex2f(8.0f, -20.0f);
     glVertex2f(12.0f, -20.0f);
@@ -367,10 +358,10 @@ void drawCharacterSide(bool facingRight) {
 
     // Kaki kanan
     glPushMatrix();
-    glTranslatef(10.0f, -7.0f, 0.0f); // Pindah titik rotasi ke posisi pangkal kaki
-    glRotatef(rightLegAngle, 0.0f, 0.0f, 1.0f); // Rotasi berdasarkan sudut kaki kanan
-    glTranslatef(-10.0f, 7.0f, 0.0f); // Kembalikan posisi setelah rotasi
-    glColor3f(0.0f, 0.3f, 0.7f); // Warna kaki kanan
+    glTranslatef(10.0f, -7.0f, 0.0f); 
+    glRotatef(rightLegAngle, 0.0f, 0.0f, 1.0f);
+    glTranslatef(-10.0f, 7.0f, 0.0f); 
+    glColor3f(0.0f, 0.3f, 0.7f); 
     glBegin(GL_QUADS);
     glVertex2f(8.0f, -20.0f);
     glVertex2f(12.0f, -20.0f);
@@ -379,8 +370,8 @@ void drawCharacterSide(bool facingRight) {
     glEnd();
 
     // Sepatu kanan
-    glTranslatef(0.0f, -5.0f, 0.0f); // Posisi sepatu kanan sedikit lebih rendah dari kaki
-    glColor3f(0.0f, 0.0f, 0.0f); // Warna hitam (sepatu kanan)
+    glTranslatef(0.0f, -5.0f, 0.0f); 
+    glColor3f(0.0f, 0.0f, 0.0f); 
     glBegin(GL_QUADS);
     glVertex2f(8.0f, -20.0f);
     glVertex2f(12.0f, -20.0f);
@@ -390,7 +381,7 @@ void drawCharacterSide(bool facingRight) {
     glPopMatrix();
 
     // Menggambar kepala (Krem)
-    glColor3f(1.0f, 0.9f, 0.6f); // Warna krem
+    glColor3f(1.0f, 0.9f, 0.6f); 
     glBegin(GL_QUADS);
     glVertex2f(6.0f, 20.0f);
     glVertex2f(16.0f, 20.0f);
@@ -399,7 +390,7 @@ void drawCharacterSide(bool facingRight) {
     glEnd();
 
     // Menggambar hidung (Hitam)
-    glColor3f(0.0f, 0.0f, 0.0f); // Warna hitam
+    glColor3f(0.0f, 0.0f, 0.0f);
     glBegin(GL_TRIANGLES);
     glVertex2f(16.0f, 30.0f);
     glVertex2f(17.0f, 28.0f);
@@ -407,7 +398,7 @@ void drawCharacterSide(bool facingRight) {
     glEnd();
 
     // Menggambar mata (Hijau)
-    glColor3f(0.0f, 0.0f, 0.0f); // Warna hijau
+    glColor3f(0.0f, 0.0f, 0.0f);
     glBegin(GL_QUADS);
     glVertex2f(10.0f, 30.0f);
     glVertex2f(12.0f, 30.0f);
@@ -416,7 +407,7 @@ void drawCharacterSide(bool facingRight) {
     glEnd();
 
     // Menggambar mulut (Abu-abu)
-    glColor3f(0.5f, 0.5f, 0.5f); // Warna abu-abu
+    glColor3f(0.5f, 0.5f, 0.5f); 
     glBegin(GL_QUADS);
     glVertex2f(10.0f, 23.0f);
     glVertex2f(14.0f, 23.0f);
@@ -425,7 +416,7 @@ void drawCharacterSide(bool facingRight) {
     glEnd();
 
     // Menggambar telinga (Krem)
-    glColor3f(1.0f, 0.9f, 0.6f); // Warna krem
+    glColor3f(1.0f, 0.9f, 0.6f);
     glBegin(GL_QUADS);
     glVertex2f(4.0f, 30.0f);
     glVertex2f(5.0f, 30.0f);
@@ -434,7 +425,7 @@ void drawCharacterSide(bool facingRight) {
     glEnd();
 
     // Menggambar rambut (Hitam)
-    glColor3f(0.0f, 0.0f, 0.0f); // Warna hitam untuk rambut
+    glColor3f(0.0f, 0.0f, 0.0f); 
     glBegin(GL_QUADS);
     glVertex2f(6.0f, 36.0f);
     glVertex2f(6.0f, 32.0f);
@@ -442,11 +433,11 @@ void drawCharacterSide(bool facingRight) {
     glVertex2f(16.0f, 32.0f);
     glEnd();
 
-    glColor3f(0.0f, 0.0f, 1.0f); // Warna krem untuk lengan atas
+    glColor3f(0.0f, 0.0f, 1.0f);
     glPushMatrix();
-    glTranslatef(12.0f, 15.0f, 0.0f);  // Posisi pangkal lengan bawah (di bahu)
-    glRotatef(leftArmAngle, 0.0f, 0.0f, 1.0f);  // Rotasi berdasarkan sudut tangan kiri
-    glTranslatef(-12.0f, -15.0f, 0.0f);  // Kembalikan posisi setelah rotasi
+    glTranslatef(12.0f, 15.0f, 0.0f); 
+    glRotatef(leftArmAngle, 0.0f, 0.0f, 1.0f); 
+    glTranslatef(-12.0f, -15.0f, 0.0f); 
     glBegin(GL_QUADS);
     glVertex2f(10.0f, 20.0f);
     glVertex2f(14.0f, 20.0f);
@@ -455,12 +446,11 @@ void drawCharacterSide(bool facingRight) {
     glEnd();
     glPopMatrix();
 
-    // Lengan bawah (Rotasi berdasarkan sudut tangan kiri)
     glColor3f(1.0f, 0.9f, 0.6f); // Warna krem untuk lengan atas
     glPushMatrix();
-    glTranslatef(12.0f, 15.0f, 0.0f);  // Posisi pangkal lengan bawah (di bahu)
-    glRotatef(leftArmAngle, 0.0f, 0.0f, 1.0f);  // Rotasi berdasarkan sudut tangan kiri
-    glTranslatef(-12.0f, -15.0f, 0.0f);  // Kembalikan posisi setelah rotasi
+    glTranslatef(12.0f, 15.0f, 0.0f);  
+    glRotatef(leftArmAngle, 0.0f, 0.0f, 1.0f);  
+    glTranslatef(-12.0f, -15.0f, 0.0f);  
     glBegin(GL_QUADS);
     glVertex2f(10.0f, 10.0f);
     glVertex2f(14.0f, 10.0f);
@@ -472,28 +462,13 @@ void drawCharacterSide(bool facingRight) {
     glPopMatrix();
 }
 
-
-void drawCharacter() {
-    glPushMatrix();
-    glTranslatef(0.0f, characterBaseY, 0.0f);
-
-    if (facingSide) {
-        drawCharacterSide(facingRight);
-    }
-    else {
-        drawCharacterFront();
-    }
-
-    glPopMatrix();
-}
-
 void display() {
     glClear(GL_COLOR_BUFFER_BIT);
     glPushMatrix();
-    glTranslatef(-cameraX, 0.0f, 0.0f); // Apply camera movement
+    glTranslatef(-cameraX, 0.0f, 0.0f); 
 
     drawBackground();
-    glTranslatef(characterX, characterBaseY, 0.0f); // Move character position
+    glTranslatef(characterX, characterBaseY, 0.0f); 
 
     if (facingSide) {
         drawCharacterSide(facingRight);
@@ -506,16 +481,26 @@ void display() {
     glutSwapBuffers();
 }
 
-
-
-
-
 void update(int value) {
+    if (isWalking) {
+        // Cegah karakter keluar dari batas kiri dan kanan latar belakang
+        if (isMovingLeft && characterX > 0.0f) {
+            characterX -= 2.0f;  
+            facingRight = false;
+        }
+        else if (isMovingRight && characterX < backgroundWidth - characterWidth - 10.0f) {
+            characterX += 2.0f;  
+            facingRight = true;
+        }
+    }
+
+    // Update posisi kamera berdasarkan posisi karakter
     if (characterX > screenWidth / 2 && characterX < backgroundWidth - screenWidth / 2) {
         cameraX = characterX - screenWidth / 2;
     }
 
     updateJump();
+
     // Perbarui sudut rotasi kaki menggunakan fungsi sinus dan cosinus
     leftLegAngle = sin(angle) * 15.0f;
     rightLegAngle = cos(angle) * 15.0f;
@@ -524,46 +509,66 @@ void update(int value) {
     angle += 0.1f;
 
     glutPostRedisplay();
-    glutTimerFunc(16, update, 0);
+    glutTimerFunc(16, update, 0); // Timer untuk update posisi setiap 16 ms
+}
+
+void moveLeft() {
+    characterX -= 5.0f;
+    facingRight = false;
+    facingSide = true;
+    isWalking = true;
+    updateLegMovement(isWalking, facingRight);
+}
+
+void moveRight() {
+    characterX += 5.0f;
+    facingRight = true;
+    facingSide = true;
+    isWalking = true;
+    updateLegMovement(isWalking, facingRight);
 }
 
 void keyboard(unsigned char key, int x, int y) {
     switch (key) {
     case 'a': // Bergerak ke kiri
-        characterX -= 5.0f;
+        isMovingLeft = true;
+        isWalking = true;
         facingRight = false;
         facingSide = true;
-        isWalking = true; // Mulai animasi berjalan
         break;
     case 'd': // Bergerak ke kanan
-        characterX += 5.0f;
+        isMovingRight = true;
+        isWalking = true;
         facingRight = true;
         facingSide = true;
-        isWalking = true; // Mulai animasi berjalan
         break;
     case 's': // Tampil di front view
-        facingSide = false; // Ganti ke front view
-        facingRight = true; // Tampilkan karakter menghadap ke depan (sesuaikan jika perlu)
-        isWalking = false; // Bisa menonaktifkan animasi berjalan jika tidak diperlukan
+        facingSide = false;
+        facingRight = true;
+        isWalking = false;
         break;
-    case 'w':
+    case 'w': // Lompat dengan tombol 'w'
+    case 32:  // Lompat dengan tombol 'Space'
         if (!isJumping) {
-            jumpVelocity = 10.0f; // Set kecepatan lompatan awal
-            isJumping = true;     // Mulai lompatan
+            jumpVelocity = 10.0f;
+            isJumping = true;
         }
         break;
     default:
         break;
     }
-    updateLegMovement(isWalking, facingRight); // Update leg movement based on walking state
     glutPostRedisplay();
 }
 
 void keyboardUp(unsigned char key, int x, int y) {
     switch (key) {
     case 'a':
+        isMovingLeft = false;
+        isWalking = isMovingRight; // Tetap berjalan jika tombol kanan masih ditekan
+        break;
     case 'd':
-        isWalking = false; // Hentikan animasi berjalan
+        isMovingRight = false;
+        isWalking = isMovingLeft; // Tetap berjalan jika tombol kiri masih ditekan
         break;
     default:
         break;
@@ -571,6 +576,43 @@ void keyboardUp(unsigned char key, int x, int y) {
     glutPostRedisplay();
 }
 
+void mouse(int button, int state, int x, int y) {
+    if (state == GLUT_DOWN) {
+        switch (button) {
+        case GLUT_LEFT_BUTTON:
+            isMovingLeft = true;
+            isWalking = true;
+            facingRight = false;
+            facingSide = true;
+            break;
+        case GLUT_RIGHT_BUTTON:
+            isMovingRight = true;
+            isWalking = true;
+            facingRight = true;
+            facingSide = true;
+            break;
+        case GLUT_MIDDLE_BUTTON:
+            if (!isJumping) {
+                jumpVelocity = 10.0f;
+                isJumping = true;
+            }
+            break;
+        default:
+            break;
+        }
+    }
+    else if (state == GLUT_UP) {
+        if (button == GLUT_LEFT_BUTTON) {
+            isMovingLeft = false;
+            isWalking = isMovingRight;
+        }
+        else if (button == GLUT_RIGHT_BUTTON) {
+            isMovingRight = false;
+            isWalking = isMovingLeft;
+        }
+    }
+    glutPostRedisplay();
+}
 
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
@@ -586,6 +628,8 @@ int main(int argc, char** argv) {
     glutKeyboardFunc(keyboard);
     glutKeyboardUpFunc(keyboardUp);
     glutTimerFunc(16, update, 0);
+    glutMouseFunc(mouse);
+
 
     glutMainLoop();
     return 0;
