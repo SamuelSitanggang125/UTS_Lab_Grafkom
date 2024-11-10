@@ -365,3 +365,6 @@ FodyWeavers.xsd
 # Exclude specific library folders
 UTSgrafkom/include/GL/
 library/
+
+UTSgrafkom/include/GL/* linguist-vendored
+library/* linguist-vendored
