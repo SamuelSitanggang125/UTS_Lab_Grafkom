@@ -43,7 +43,7 @@ Proyek ini adalah simulasi animasi karakter menggunakan OpenGL yang mencakup ger
 
 Clone proyek ini menggunakan Git:
 ```bash
-git clone https://github.com/username/nama-proyek.git](https://github.com/ricathsb/UTS_Lab_Grafkom.git
+git clone https://github.com/ricathsb/UTS_Lab_Grafkom.git
 ```
 
 ### 2. Install Dependencies nya 
