@@ -618,7 +618,7 @@ int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
     glutInitWindowSize(screenWidth, 400);
-    glutCreateWindow("Side Scrolling with Background Elements");
+    glutCreateWindow("Tugas UTS LAB GRAFKOM");
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
