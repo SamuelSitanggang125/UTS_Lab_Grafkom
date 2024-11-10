@@ -301,9 +301,6 @@ void drawCharacterFront() {
     glVertex2f(22.0f, 25.0f);
     glEnd();
     glPopMatrix();
-
-    // Detail lainnya seperti kaki, sepatu, kepala, mata, hidung, dll.
-    // (Implementasi karakter seperti pada kode asli)
 }
 
 void drawCharacterSide(bool facingRight) {
@@ -620,8 +617,6 @@ int main(int argc, char** argv) {
     glutInitWindowSize(screenWidth, 400);
     glutCreateWindow("Tugas UTS LAB GRAFKOM");
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
     gluOrtho2D(0.0f, screenWidth, -200.0f, 300.0f);
 
     glutDisplayFunc(display);
@@ -629,9 +624,6 @@ int main(int argc, char** argv) {
     glutKeyboardUpFunc(keyboardUp);
     glutTimerFunc(16, update, 0);
     glutMouseFunc(mouse);
-
-
-
     glutMainLoop();
     return 0;
 }
